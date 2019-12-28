@@ -13,6 +13,7 @@ def count_orbits(orbits, key, orbits_count):
 def get_all_ancestors(orbits, object):
     if object not in orbits.keys():
         return [object]
+    else:
         return [object]+get_all_ancestors(orbits, orbits.get(object))
 
 def find_common_object(list_1, list_2):
