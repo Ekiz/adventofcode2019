@@ -4,7 +4,7 @@ import time
 import threading
 from collections import defaultdict
 
-def read_instruction(index: int, registry: list, input: list, output: list):
+def read_instruction(index: int, registry: list, input: list = list(), output: list = list()):
     if index >= len(registry):
         print("index {} outside registry length {}".format(index, len(registry)))
         sys.exit(1)
@@ -33,9 +33,10 @@ def read_instruction(index: int, registry: list, input: list, output: list):
         waitcount = 0
         while not input:
             if waitcount > 1000:
+                print("Thread is probably never gonna finish... exiting")
                 return
             waitcount += 1
-            time.sleep(0.00001)
+            time.sleep(0.000001)
         user_input = input.pop(0)
         position_to_store_at = registry[index+1]
         registry[position_to_store_at] = user_input
@@ -43,7 +44,7 @@ def read_instruction(index: int, registry: list, input: list, output: list):
     elif (ins == 4): # output
         output_value = registry[registry[index+1]] if mode1 == 0 else registry[index+1]
         output.append(output_value)
-        print("OUTPUT: {}".format(output_value))
+        # print("OUTPUT: {}".format(output_value))
         index += 2
     elif (ins == 5): # jump if true
         if (registry[registry[index+1]] if mode1 == 0 else registry[index+1]) != 0:
@@ -67,25 +68,20 @@ def read_instruction(index: int, registry: list, input: list, output: list):
         index += 4
     read_instruction(index, registry, input, output)
 
-#def amplification_circuit(registry):
-#    max_thruster_signal = 0
-#    for permutation in itertools.permutations([0,1,2,3,4]):
-#        ampliphier_settings = list(permutation)
-#        output = Output()
-#        second_input = 0
-#        for ampliphier in ampliphier_settings:
-#            output.reset()
-#            read_instruction(0, registry.copy(), Input([ampliphier]+[second_input]), output)
-#            second_input = output.output_values[0]          
-#        if sum(output.output_values) >= max_thruster_signal:
-#            max_thruster_signal = 
-#            print("Largest thruster signal is: {} with permutation: {}".format(max_thruster_signal, permutation))
-#    return max_thruster_signal
+def find_noun_and_verb_for_output(registry: list, expected_output: int):
+    for noun in range(100):
+        for verb in range(100):
+            reg_copy = registry.copy()
+            reg_copy[1] = noun
+            reg_copy[2] = verb
+            
+            read_instruction(index = 0, registry=reg_copy)
+            if (reg_copy[0] ==  expected_output):
+                return 100*noun+verb
 
-def amplification_circuit_with_loops(registry: list, min_phase_settings: int, max_phase_settings: int):
+def amplification_circuit(registry: list, min_phase_settings: int, max_phase_settings: int):
     max_thruster_signal = 0
     for permutation in itertools.permutations(range(min_phase_settings,max_phase_settings+1)):
-        print("Testing permutation: {}".format(permutation))
         inputs = [[i] for i in permutation]
         inputs.append(inputs[0])
         inputs[0].append(0)
@@ -97,18 +93,37 @@ def amplification_circuit_with_loops(registry: list, min_phase_settings: int, ma
             thread.start()
         threads[-1].join() # Wait for last thread to finish
         max_thruster_signal = max(max_thruster_signal, finaloutput[0])
-        print("Max thruster signal so far: {}".format(max_thruster_signal))
     return max_thruster_signal
 
 def main():
     registry = []
-    with open("input.txt") as input:
-        registry = [int(i) for i in input.readline().split(",")]
     
-    print("Max thruster signal is: {}".format(amplification_circuit_with_loops(registry.copy(), 5, 9)))
-    #outputs = Output()
-    #inputs = Input([5])
-    #read_instruction(0,registry.copy(),inputs, outputs)
+    with open("input_day2.txt") as input:
+        registry = [int(i) for i in input.readline().split(",")]
+    input = list()
+    output = list()
+    reg_copy = registry.copy()
+    reg_copy[1] = 12
+    reg_copy[2] = 2
+    read_instruction(0, reg_copy, input, output)
+    print("Day 2, part 1. Position 0's value is {}".format(reg_copy[0]))
+    print("Day 2, part 2. Noun and verb combined is: {}".format(find_noun_and_verb_for_output(registry.copy(), 19690720)))
+    
+    with open("input_day5.txt") as input:
+        registry = [int(i) for i in input.readline().split(",")]
+    input = [1]
+    output = list()
+    read_instruction(0, registry.copy(), input, output)
+    print("Day 5, part 1: The diagnostic code is: {}".format(output[-1]))
+    input = [5]
+    output = list()
+    read_instruction(0, registry.copy(), input, output)
+    print("Day 5, part 2: The diagnostic code is: {}".format(output[-1]))
+
+    with open("input_day7.txt") as input:
+        registry = [int(i) for i in input.readline().split(",")]
+    print("Day 7, part 1: Max thruster signal is: {}".format(amplification_circuit(registry.copy(), 0, 4)))
+    print("Day 7, part 2: Max thruster signal is: {}".format(amplification_circuit(registry.copy(), 5, 9)))
     
 if __name__ == '__main__':
     main()
