@@ -37,9 +37,9 @@ def read_instruction(index: int, registry: list, input: list = list(), output: l
                 return
             waitcount += 1
             time.sleep(0.000001)
-        user_input = input.pop(0)
+        input_value = input.pop(0)
         position_to_store_at = registry[index+1]
-        registry[position_to_store_at] = user_input
+        registry[position_to_store_at] = input_value
         index += 2
     elif (ins == 4): # output
         output_value = registry[registry[index+1]] if mode1 == 0 else registry[index+1]
@@ -72,16 +72,14 @@ def find_noun_and_verb_for_output(registry: list, expected_output: int):
     for noun in range(100):
         for verb in range(100):
             reg_copy = registry.copy()
-            reg_copy[1] = noun
-            reg_copy[2] = verb
-            
+            reg_copy[1], reg_copy[2] = noun, verb
             read_instruction(index = 0, registry=reg_copy)
-            if (reg_copy[0] ==  expected_output):
+            if reg_copy[0] ==  expected_output:
                 return 100*noun+verb
 
 def amplification_circuit(registry: list, min_phase_settings: int, max_phase_settings: int):
     max_thruster_signal = 0
-    for permutation in itertools.permutations(range(min_phase_settings,max_phase_settings+1)):
+    for permutation in itertools.permutations(range(min_phase_settings, max_phase_settings+1)):
         inputs = [[i] for i in permutation]
         inputs.append(inputs[0])
         inputs[0].append(0)
@@ -100,13 +98,10 @@ def main():
     
     with open("input_day2.txt") as input:
         registry = [int(i) for i in input.readline().split(",")]
-    input = list()
-    output = list()
     reg_copy = registry.copy()
-    reg_copy[1] = 12
-    reg_copy[2] = 2
-    read_instruction(0, reg_copy, input, output)
-    print("Day 2, part 1. Position 0's value is {}".format(reg_copy[0]))
+    reg_copy[1], reg_copy[2] = 12, 2
+    read_instruction(0, reg_copy)
+    print("Day 2, part 1. Position 0's value is: {}".format(reg_copy[0]))
     print("Day 2, part 2. Noun and verb combined is: {}".format(find_noun_and_verb_for_output(registry.copy(), 19690720)))
     
     with open("input_day5.txt") as input:
