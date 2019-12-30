@@ -2,7 +2,7 @@ def get_number_as_list(number):
     if number < 10:
         return [number]
     element = number%10
-    return get_number_as_list(int(number/10)) + [element]
+    return get_number_as_list(number // 10) + [element]
 
 def at_least_one_double(numbers):
     ret = []
@@ -37,6 +37,7 @@ def all_non_desc(numbers):
     return set(numbers)-remove_set
 
 def main():
+    print(len(at_least_one_double(all_non_desc(range(124075, 580769)))))
     print(len(at_least_one_exactly_double(all_non_desc(range(124075, 580769)))))
 
 if __name__ == '__main__':

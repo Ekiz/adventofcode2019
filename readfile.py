@@ -9,13 +9,10 @@ def calculate_fuel(weight: int) -> int:
         return fuel + calculate_fuel(fuel)
 
 def main():
-    print("Starting main")
-    filepath = r"C:\Users\ekis_\Desktop\adventofcode\day1\input.txt"
     sum = 0
-    with open(filepath, 'r') as input:
+    with open("input_day1.txt", 'r') as input:
         for line in input:
           sum += calculate_fuel(int(line))
-          print ("partialsum: {}".format(sum))
     print("sum: {}".format(sum))
 
 if __name__ == '__main__':
